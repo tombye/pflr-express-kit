@@ -1,0 +1,77 @@
+{
+  "title": "Route",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "_blockType": {
+      "title": "Type",
+      "type": "string",
+      "default": "Route",
+      "enum": ["Route"]
+    },
+    "url": {
+      "title": "URL",
+      "type": "string"
+    },
+    "heading": {
+      "title": "Heading",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string",
+      "multiline": true
+    },
+    "body": {
+      "title": "Body",
+      "type": "string",
+      "multiline": true
+    },
+    "block": {
+      "title": "Block",
+      "type": "string"
+    },
+    "blocks": {
+      "title": "Blocks",
+      "type": "array"
+    },
+    "extraBlocks": {
+      "title": "Extra blocks",
+      "description": "Blocks which appear after the primary button",
+      "type": "array"
+    },
+    "steps": {
+      "title": "Steps",
+      "type": "array"
+    },
+    "depends": {
+      "title": "Depends",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "template": {
+      "title": "Template",
+      "type": "string"
+    },
+    "_isa": {
+      "title": "Isa",
+      "type": "string"
+    },
+    "*notes": {
+      "title": "Notes",
+      "type": "string",
+      "multiline": true
+    }
+  },
+  "required": [
+    "_id",
+    "_blockType",
+    "url",
+    "heading"
+  ]
+}

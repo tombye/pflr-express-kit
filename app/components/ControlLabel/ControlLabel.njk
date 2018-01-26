@@ -1,11 +1,14 @@
 {% from '../ControlError/ControlError.njk' import ControlError with context %}
 {% macro ControlLabel(name, label='', sublabel='', hint='', optional='', error='') -%}
-{% set label = getFormattedProp(name, 'label', name, { value: label }) %}
-{% set sublabel = getFormattedProp(name, 'sublabel', { value: sublabel }) %}
+{% set label = getFormattedBodyContent(name, 'label', name, { value: label }) %}
+{% set sublabel = getFormattedBodyContent(name, 'sublabel', { value: sublabel }) %}
 {% set optional = getBlockProp(name, 'optional', { value: optional }) %}
-{% set hint = getFormattedProp(name, 'hint', { value: hint }) %}
-  <label xclass="form-label-bold" for="{{ name }}">
-    <span class="form-label-bold">{{ label | safe }}{% if optional %} (optional){% endif %}</span>
+{% set hint = getFormattedBodyContent(name, 'hint', { value: hint }) %}
+{% set labelExtra = getFormattedBody(name, 'label_extra') %}
+{% set hintExtra = getFormattedBody(name, 'hint_extra') %}
+{% set visually_hidden = getBlockProp(name, 'visuallyhidden') %}
+  <label for="{{ name }}">
+    <span class="form-label-bold{% if visually_hidden %} visuallyhidden{% endif %}">{{ label | safe }}{% if optional %} (optional){% endif %}</span>
       {% if sublabel %}
       <span class="form-sublabel">{{ sublabel | safe }}</span>
       {% endif %}
@@ -16,4 +19,6 @@
     {% endif %}
     {{ ControlError(name, error) }}
   </label>
+  {% if labelExtra %}<div class="labelExtra">{{ labelExtra | safe }}</div>{% endif %}
+  {% if hintExtra %}<div class="hintExtra">{{ hintExtra | safe }}</div>{% endif %}
 {%- endmacro %}

@@ -1,68 +1,829 @@
-{% extends "templates/base/base.html" %}
+{% extends "templates/form/form.html" %}
+
+{% block stylesheet %}
+{{ super() }}
+<style>
+html {
+  background-color: #ffffff;
+  -webkit-print-color-adjust;
+}
+body {
+  background-color: transparent;
+}
+
+#global-cookie-message,
+#global-header,
+.FeedbackBanner,
+.PhaseBanner,
+#global-header-bar,
+#footer {
+  display: none;
+}
+
+div#content {
+  margin: 0;
+}
+.container {
+  margin: 120px 50px 50px 50px;
+  padding-right: 50px;
+  display: table;
+  table-layout: fixed;
+  width: 1px;
+  xborder-spacing: 20px;
+  xborder-collapse: separate;
+}
+.box-row {
+  display: table-row;
+}
+.box-row + .box-row {
+  background: #eeeeee;
+}
+.box-row + .box-row > * {
+  padding-top: 20px;
+}
+.box {
+  position: relative;
+  display: table-cell;
+  width: 500px;
+  vertical-align: top;
+  padding-bottom: 100px;
+  z-index: 10;
+}
+.innerbox:before {
+  content: '▶';
+  position: absolute;
+  font-size: 20px;
+  top: 37px;
+  right: 100%;
+}
+.box:first-child .innerbox:before {
+  content: '';
+}
+.innerbox {
+  padding: 10px 10px 10px 40px;
+  background: #fcfcfc;
+  display: table;
+  box-sizing: border-box;
+  width: 100%;
+  border: solid 1px #000000;
+}
+.innerbox-multiple {
+  box-shadow: 1px 1px 0px 0px #fff, 2px 2px 0px 0px #000, 3px 3px 0px 0px #fff, 4px 4px 0px 0px #000, 5px 5px 0px 0px #fff, 6px 6px 0px 0px #000, 7px 7px 0px 0px #fff, 8px 8px 0px 0px #000;
+}
+.gutter {
+  display: table-cell;
+  width: 100px;
+  position: relative;
+}
+.gutter-depends {
+  width: 360px;
+}
+.gutter:before {
+  top: 47px;
+  content: '';
+  display: block;
+  border-top: solid 5px #000000;
+  position: absolute;
+  left: 0;
+  right: 10px;
+}
+.gutter-depends:before {
+  left: 50%;
+}
+.gutter-depends:after {
+  top: -80px;
+  left: 50%;
+  content: '';
+  display: block;
+  border-top: solid 5px #000000;
+  border-left: solid 5px #000000;
+  position: absolute;
+  width: 50%;
+  height: 100px;
+}
+
+.matchProp__list,
+.gutter ul {
+  position: relative;
+  z-index: 10;
+  font-size: 16px;
+  padding: 10px;
+  top: 12px;
+}
+.matchProp__list li p,
+.gutter li p {
+  margin: 0;
+}
+.matchProp__list li + li:before,
+.gutter li + li:before {
+  display: block;
+  content: 'or';
+  font-style: italic;
+  font-size: 16px;
+  margin: 10px 16px;
+}
+.gutter ul {
+  background: #ddd;
+  border: solid 1px #000;
+  color: #000;
+  margin: 0 100px 0 100px;
+  top: 12px;
+}
+
+
+.gutter ul:before {
+  color: #000000;
+  content: '▶';
+  position: absolute;
+  font-size: 20px;
+  top: 24px;
+  right: 100%;
+}
+.gutter ul:after {
+  content: '';
+  position: absolute;
+  top: 34px;
+  left: -100px;
+  width: 90px;
+  border-top: solid 5px #000000;
+}
+.depends:before {
+  top: -80px;
+  content: '';
+  display: block;
+  border-top: solid 5px #000000;
+  border-right: solid 5px #000000;
+  position: absolute;
+  width: 100%;
+  padding-right: 47px;
+  height: 125px;
+}
+.gutter-nextdepends + .depends:before {
+  border-right: none;
+}
+.gutter-previousdepends.gutter-depends {
+  width: 90px;
+}
+.gutter-previousdepends.gutter-depends:before {
+  left: 0;
+}
+.gutter-previousdepends.gutter-depends:after {
+  border-left: none;
+}
+.gutter-previousdepends + .depends:before {
+  
+}
+.depends-skip:before {
+  border-right: solid 5px #ff0000;
+  padding-right: 50%;
+}
+.box .form-group + .form-group + .form-group {
+  display: none;
+}
+a.block-edit {
+  margin-left: -35px;
+}
+
+/* @media print */
+ .print .routeKey,
+ .print .block-edit {
+   display: none;
+ }
+ .print .innerbox {
+   padding-left: 10px;
+ }
+
+.innerbox label .block-edit {
+  margin-left: -85px;
+}
+.innerbox > a.block-edit:first-child {
+  margin-top: -50px;
+}
+.innerbox .lede {
+  font-size: 18px;
+}
+
+p.matchProp__key {
+  text-indent: -12px;
+  padding-left: 12px;
+}
+p.depend__key {
+  text-indent: -12px;
+  padding-left: 12px;
+}
+.redirectConditions {
+  background: #eee;
+  border: solid 1px #000;
+  border-top: none;
+}
+.condition__key::before {
+  content: 'If ';
+}
+.condition__constraint {
+  padding-left: 20px;
+}
+.condition__constraint::before {
+  content: 'matches ';
+}
+.conditionalRedirect {
+  padding-left: 30px;
+}
+.conditionalRedirect::before {
+  content: 'Redirect to ';
+}
+.routeKey {
+  position: absolute;
+  top: -45px;
+  width: 100%;
+  left: 0;
+}
+.routeKey small {
+  display: block;
+  font-size: 1rem;
+}
+.routeKey + h1.heading-large, .routeKey + h2.heading-large {
+  margin: 0;
+}
+.mutiple-route {
+  float: right;
+  margin-right: 40px;
+}
+
+.action {
+  margin-top: 50px;
+  display: table-cell;
+  zbackground: pink;
+}
+.gutter-action {
+  display: table-cell;
+}
+.depends__yes,
+.depends__no {
+  position: absolute;
+  background: #fff;
+  padding: 3px;
+  z-index: 10000;
+}
+.depends__yes {
+  left: 80%;
+  top: 35px;
+}
+span.depends__no {
+  left: 50%;
+  top: -40px;
+  margin-left: -10px;
+}
+.control-group-actions {
+  display: none;
+}
+
+
+.flowchartLinesOff .gutter,
+.flowchartLinesOff .box:before,
+.flowchartLinesOff .innerbox:before {
+  visibility: hidden !important;
+}
+.flowchartLinesOff .gutter {
+  width: 100px !important;
+}
+
+{#
+[data-block-name]:hover:before {
+  content: attr(data-block-name);
+  position: absolute;
+  xmargin-top: -0.75rem;
+  font-size: 0.75rem;
+  color: #999;
+}
+#}
+
+#flowchartControls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: none;
+}
+#flowchartControls label {
+  display: inline-block;
+}
+#flowchartControls p {
+  display: inline-block;
+  margin-right: 3rem;
+}
+{% set printable = req.query.printable %}
+{% if printable %}
+  #flowchartControls {
+    display: block;
+  }
+  .block-edit {
+    display: none !important;
+  }
+  a:after {
+    content: '' !important;
+    display: none !important;
+  }
+  .innerbox {
+    padding-left: 10px;
+  }
+  .control-group__actions {
+    display: none !important;
+  }
+{% endif %}
+
+
+.printing .flowchartContainer {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+.flowchartContainerInner {
+  position: relative;
+}
+.printingGuide .flowchartContainer {
+  background: pink;
+} 
+
+.printingGuide .flowchartContainerInner {
+  background: yellow;
+}
+
+.flowchartActions span {
+  cursor: pointer;
+}
+
+.gutter--hide,
+.box--hide,
+.flowchartActions {
+  display: none;
+}
+.printingGuide .gutter--hide,
+.printingGuide .box--hide {
+  display: block;
+  position: absolute;
+  top: -80px;
+}
+.printingGuide .flowchartActions {
+  display: block;
+}
+@media print {
+  #flowchartControls,
+  .flowchartActions
+  .gutter--hide,
+  .box--hide {
+    display: none !important;
+  }
+}
+
+
+.route-notes {
+  margin-top: 5rem;
+  color: #f00;
+}
+
+a.block-edit {
+  white-space: nowrap;
+}
+.edit-notes {
+  font-size: 1rem;
+  position: relative;
+  top: -0.5rem;
+  left: 0.5rem;
+}
+
+/* ----- */
+.flow-container {
+  transform-origin: top left;
+  transform: scale(0.8);
+}
+.flow-container {
+  white-space: nowrap;
+  padding-top: 5rem;
+  vertical-align: top;
+}
+.flow-container * {
+  vertical-align: top;
+}
+.steps {
+  display: inline-block;
+  Xborder: solid 0.1rem black;
+  Xpadding: 0.25em;
+  white-space: nowrap;
+  Xmargin-right: 1rem;
+  Xmargin-top: -0.5rem;
+}
+.collapsed {
+  transform-origin: top left;
+  transform: scale(0.25);
+}
+.route-block {
+  display: inline-block;
+  position: relative;
+  white-space: nowrap;
+}
+.gutter {
+  display: inline-block;
+}
+.route-block:hover {
+  Xbackground: #eeeeee;
+}
+.steps-block {
+  display: inline-block;
+}
+.route {
+  display: inline-block;
+  xbackground: black;
+  xcolor: white;
+  xmargin-right: 5rem;
+  width: 40rem;
+  position: relative;
+}
+
+.route:last-child {
+  Xmargin-right: 0;
+}
+.route-box {
+  white-space: normal;
+  border: solid 1px black;
+  padding: 1rem 1rem 1rem 4rem;
+  position: relative;
+}
+.steps-toggle {
+  position: absolute;
+  right: 0;
+  top: -2rem;
+  z-index: 100;
+  cursor: pointer;
+  color: blue;
+  text-decoration: underline;
+}
+
+.show-steps .route-box {
+  background: #ffcc00;
+}
+.show-steps > .steps > .route-block > .route {
+  Xbackground: #eeeeee;
+}
+
+body {
+  /*padding: 4rem 2rem;*/
+}
+.scale {
+/*  position: fixed;
+  left: 2rem;
+  top: 2rem;*/
+  margin: 15px;
+}
+</style>
+{% endblock %}
 
 {% block page_title %}
 Wizard flow - Prototype
 {% endblock %}
 
 {% block content %}
-<div id="container">
-<div class="box-row">
-<div class="box">
-<div class="innerbox" data-block-name="{{stepRoute.id}}">
-{% set stepRoute = routesFlattened[route.wizard] %}
-<p class="routeKey">{{stepRoute.id}}</p>
-{{ Block.PageHeader(stepRoute.id, start_page=stepRoute.start_page) }}
-{{ Block.Group(blocks=stepRoute.blocks) }}
+<div class="scale">
+<input name="scale" type="range" min="0" max="1" value="0.8" step="0.01">
 </div>
+<div class="flow-container">
+{{ renderRoute(route.wizard) }}
 </div>
-{% for step in wizard.stepsFlat %}
-{% set stepRoute = routesFlattened[step] %}
+{% endblock %}
 
-{% if not loop.last and stepRoute.blocks %}
+{% macro renderRoute(route) %}
+{% set stepRoute = routesFlattened[route] %}
+{% set stepId = route %}
+{% set multiple = false %}
+{% set multipleIndex = stepRoute._index %}
+{% set skipMultiple = false %}
+{% if stepRoute.multiple %}
+  {% set stepId = stepRoute.multiple_route %}
+  {# {% set stepRoute = routesFlattened[stepId] %} #}
+  {% set multiple = true %}
+  {% if multipleIndex > 1 %}
+    {% set skipMultiple = true %}
+  {% endif %}
+{% endif %}
+{% if stepRoute.dynamic_multiple and stepRoute.dynamicIndex > 1 %}
+{% set skipMultiple = true %}
+{% endif %}
+{% if stepRoute.parentDynamicIndex > 1 %}
+{% set skipMultiple = true %}
+{% endif %}
+{% if not skipMultiple %}
+<div class="route-block" data-name-route="{{route}}">
+{% if not skipMultiple %}
+{% set dependsStore = [] %}
+{% if not loop.blast and not stepRoute.bblocks %}
 {% set previousDepends = depends %}
-{% set depends = getBlockProp(stepRoute.key, 'depends') %}
-<div class="gutter{% if depends %} gutter-depends{% endif %}" id="gutter-{{ stepRoute.key }}">
-{% if depends %}
-<ul class="xlist xlist-bullet">
-{% for depend in depends %}
-<li>
-{% for key, constraint in depend %}
-  <p class="dependKey" style="font-weight:bold;">{{ splitWord(key) | safe }}</p>
-  <p class="dependConstraint">{{ constraint }}</p>
+{% set nextDepends = '' %}
+{% set continueDepends = '' %}
+{% set nextStep = '' %}
+{% if wizard.stepsFlat[loop.index] %}
+{% set nextStep = routesFlattened[wizard.stepsFlat[loop.index]] %}
+{% endif %}
+{% if nextStep %}
+{% set nextDepends = nextStep.depends %}
+{% endif %}
+{% set depends = stepRoute.depends %}
+{% if not depends %}
+{% for block in stepRoute.blocks %}
+  {% if not depends %}
+  {% set depends = getBlockProp(block, 'depends') %}
+  {% set dependsSoak = dependsStore.push(depends) %}
+  {% endif %}
 {% endfor %}
+{% for block in stepRoute.extraBlocks %}
+  {% if not depends %}
+  {% set depends = getBlockProp(block, 'depends') %}
+  {% set dependsSoak = dependsStore.push(depends) %}
+  {% endif %}
+{% endfor %}
+{% set depends = dependsStore[0] %}
+{% endif %}
+{% set redirectConditions = stepRoute.redirectConditions %}
+<div class="gutter{% if nextDepends %}{% if depends == nextDepends %} gutter-nextdepends{% endif %}{% endif %}{% if depends %}{% if not nextDepends %} gutter-nonextdepends{% endif %}{% if depends == previousDepends %} gutter-previousdepends{% endif %} gutter-depends{% endif %}" id="gutter-{{ stepRoute._id }}">
+<span class="button gutter--hide" data-action="hide">Hide</span>
+{% if depends %}
+{% if depends != previousDepends %}
+<span class="depends__yes">Yes</span>
+<span class="depends__no">No</span>
+{{ matchProps(depends, type='depend') }}
+{% endif %}
+{% endif %}
+</div>
+<div class="route">
+{% set stepsToggle = getBlockProp(route, 'steps') %}
+{% if stepsToggle and stepsToggle.length %}
+<span class="steps-toggle">Collapse steps</span>
+{% endif %}
+{% set firstStep = false %}
+{% set lastStep = false %}
+{% set flattened = routesFlattened[stepId] %}
+{% if flattened.firstStep %}{% set firstStep = true %}{% endif %}
+{% if flattened.lastStep %}{% set lastStep = true %}{% endif %}
+{% if firstStep %}
+{# <div class="box-steps-cell">
+<div class="box-steps-table">
+<div class="box-steps-row"> #}
+{# <div class="fwap"> #}
+{% endif %}
+<div class="Xbox{% if depends %} Xdepends{% endif %}" id="{{ stepRoute._id }}">
+<span class="button box--hide" data-action="hide">Hide</span>
+<div class="route-box{% if multiple %} Xinnerbox-multiple{% endif %}" data-block-name="{{stepId}}">
+{% set stepUrl = getRouteUrl(route) %}
+{% set stepUrlStub = stepUrl %}
+{% if multiple %}
+{% set stepUrlStub = stepUrlStub.replace('/1', '') %}
+{% set stepUrlStub = stepUrlStub + '/{n}' %}
+{% endif %}
+{# {{ stepId }}, {{ skipMultiple }}, {{multipleIndex}} #}
+<p class="routeKey">{{stepId}} <small><a href="{{ stepUrl }}">{{ stepUrlStub }}</a> <a href="{{ stepUrl }}/edit">(edit)</a>
+{% if multiple %}
+<span class="mutiple-route">Multiple route: min={{ stepRoute.multiple_min }}; max={{ stepRoute.multiple_max }}</span>
+{% endif %}
+</small>
+</p>
+{#
+<p>
+nextStep:{{ stepRoute.nextStep }}<br>
+hierarchy:<br>{{ stepRoute.hierarchy.join('<br>') | safe }}
+</p>
+#}
+{% if route.flowchartOutput %}
+{{ route.flowchartOutput[stepId] | safe }}
+{% else %}
+{# update per-route id and vars #}
+{% set updateRouteFormatSink = updateRouteFormat(step) %}
+
+{{ Block.PageHeader(stepId, start_page=stepRoute.start_page) }}
+{{ Block.Body(stepId) }}
+{# {% if stepRoute.body %}{{ Block.Group(stepId) }}{% endif %} #}
+{{ Block.Group(blocks=stepRoute.blocks) }}
+{{ Block.Group(blocks=stepRoute.extraBlocks) }}
+{% endif %}
+</div>
+{% if redirectConditions %}
+<ul class="redirectConditions">
+{% for redirect, condition in redirectConditions %}
+<li>
+{{ matchProps(condition, type='condition') }}
+<p class="conditionalRedirect">{{ redirect }}</p>
 </li>
 {% endfor %}
 </ul>
 {% endif %}
+
+
+<div class="route-notes {{ govukClassname('govuk-govspeak') }}">
+{% set notes = getFormattedBody(stepId, '*notes') %}
+{% set notesLink = 'Add notes' %}
+{% if notes %}
+{% set notesLink = '' %}
+{% endif %}
+<a class="block-edit" href="/admin/block/{{ stepId }}/*notes" title="Edit notes for {{ stepId }}">✎ <span class="edit-notes">{{ notesLink }}</span></a>
+{% if notes %}
+{{ notes | safe }}
+{% endif %}
 </div>
-<div class="box{% if depends %} depends{% endif %}" id="{{ stepRoute.key }}">
-<div class="innerbox" data-block-name="{{stepRoute.id}}">
-<p class="routeKey">{{stepRoute.id}}</p>
-{{ Block.PageHeader(stepRoute.id, start_page=stepRoute.start_page) }}
-{{ Block.Group(blocks=stepRoute.blocks) }}
+
 </div>
+
+{% endif %}
+{% endif %}
+</div>
+{{ renderSteps(route) }}
 </div>
 {% endif %}
+{% endmacro %}
+
+{% macro renderSteps(route) %}
+{% set steps = getBlockProp(route, 'steps') %}
+{% if steps and steps.length %}
+<div class="steps-block">
+<div class="steps">
+{% for step in steps %}
+{{ renderRoute(step) }}
 {% endfor %}
 </div>
-{% if false %}
-<div class="box-row">
-<div class="action"></div>
-{% for step in wizard.stepsFlat %}
-{% set stepRoute = routesFlattened[step] %}
-{% if not loop.last and stepRoute.blocks %}
-<div class="gutter-action"></div>
-<div class="action">
-{% if getBlock('action:'+step) %}{{ Block.ApAction('action:'+step) }}{% endif %}
 </div>
 {% endif %}
-{% endfor %}
+{% endmacro %}
+
+
+{% block Xcontent %}
+{# <pre>{{ routesFlattened | json }}</pre> #}
+<div id="flowchartControls">
+<p class="form-group"><label class="form-label-bold">Scale <input name="scale" value="0.66"></label><button class="button splitFlowchart">Split flowchart</button></p>
+<p class="form-group"><button class="button removePrintingGuides">Remove printing helpers</button></p>
+<p class="form-group"><button class="button removeFlowchartLines">Remove flowchart lines</button></p>
+</div>
+
+<div class="flowchartContainer">
+<div class="flowchartActions"><span class="button" data-action="hide">Hide</span><span class="button" data-action="up">Up</span><span class="button" data-action="down">Down</span><span class="button" data-action="left">Left</span><span class="button" name="right">Right</span></div>
+<div class="flowchartContainerInner">
+<form method="post">
+</form>
 </div>
 </div>
-{% endif %}
 {% endblock %}
 
-{% block body_end_extra %}
-jQuery("#children_resident, #communication_methods").addClass("depends-skip");
-// jQuery("#gutter-your_plan, #your_plan").hide();
+{% block body_end %}
+{{ super() }}
+{# jQuery("#children_resident, #communication_methods").addClass("depends-skip");
+// jQuery("#gutter-your_plan, #your_plan").hide(); #}
+<script>
+function getToggleSteps(el) {
+  return jQuery(el).closest('.route-block').children('.steps-block')
+}
+jQuery('.steps-toggle').on('click', function() {
+  var $toggle = jQuery(this)
+  var $steps = getToggleSteps($toggle)
+  $steps.toggleClass('collapsed')
+  var collapsed = $steps.hasClass('collapsed')
+  if (collapsed) {
+    var bounds = $steps.get(0).getBoundingClientRect()
+    $steps.css('width', (bounds.width * 2) + 'px')
+  } else {
+    $steps.css('width', 'auto')
+  }
+  var toggleText = collapsed ? 'Expand steps' : 'Collapse steps'
+  $toggle.html(toggleText)
+}).hover(function() {
+  getToggleSteps(this).addClass('show-steps')
+},function() {
+  getToggleSteps(this).removeClass('show-steps')
+})
+
+jQuery('[name="scale"]').on('change', function() {
+  var scale = jQuery(this).val()
+  jQuery('.flow-container').css('transform', 'scale(' + scale + ')')
+})
+
+jQuery(document).ready(function() {
+  setTimeout(function() {
+    jQuery('[media=print]').remove()
+    jQuery('[media=screen]').attr('media', 'all')
+  }, 100)
+
+  const $body = jQuery('body')
+
+
+  $body.on('click', '.splitFlowchart', () => {
+    const scale = jQuery('[name=scale]').val() * 1
+    splitFlowchart(scale)
+  })
+
+  $body.on('click', '.removePrintingGuides', () => {
+    removePrintingGuides()
+  })
+
+  $body.on('click', '.removeFlowchartLines', () => {
+    removeFlowchartLines()
+  })
+
+  $body.on('click', '.box--hide', function () {
+    jQuery(this).closest('.box').css('visibility', 'hidden')
+  })
+
+  $body.on('click', '.gutter--hide', function () {
+    jQuery(this).closest('.gutter').css('visibility', 'hidden')
+  })
+
+  if (window.location.hash) {
+    setTimeout(function() {
+      var fragment = window.location.hash
+      var fragmentPosition = $(fragment).offset()
+      var fragmentPositionLeft = fragmentPosition.left
+
+      $body.scrollLeft(fragmentPositionLeft - 50)
+      $(window).scrollTop(0)
+    }, 1000)
+    
+  }
+
+})
+
+
+const $body = jQuery('body')
+const a0 = 118.9
+const a0height = 84.1
+
+const removePrintingGuides = () => {
+  $body.removeClass('printingGuide')
+}
+const removeFlowchartLines = () => {
+  $body.addClass('flowchartLinesOff')
+}
+
+const splitFlowchart = (scale) => {
+  $body.addClass('printing')
+  $body.addClass('printingGuide')
+
+  const a0scaled = Math.round((a0 / scale) * 10) / 10
+  const a0scaledHeight = Math.round(((a0height/2) / scale) * 10) / 10
+  // const repeatBufferScaled = Math.round((10 / scale) * 10) / 10
+  const $flowchartContainer = jQuery('.flowchartContainer')
+  const $container = jQuery('.container')
+  $flowchartContainer.css({width: `${a0scaled}cm`, height: `${a0scaledHeight}cm`})
+  const flowchartWidth = $flowchartContainer.width()
+  const containerWidth = $container.width()
+
+
+  const clonesRequired = Math.ceil(containerWidth/flowchartWidth) + 1
+
+  const clones = ['this space left intentionally blank']
+  for (let cloneCount = 1; cloneCount < clonesRequired; cloneCount++) {
+    const $clonedFlowchart = $flowchartContainer.clone()
+    $clonedFlowchart.css('z-index', cloneCount)
+    const cloneShift = cloneCount * a0scaled
+    $clonedFlowchart.find('.flowchartContainerInner').css('margin-left', `-${cloneShift}cm`)
+    $body.append($clonedFlowchart)
+    clones.push($clonedFlowchart)
+  }
+
+  const shiftUnit = 40
+  jQuery('.flowchartActions span').on('click', function() {
+    $action = jQuery(this)
+    const action = jQuery(this).attr('data-action')
+    const $container = $action.closest('.flowchartContainer')
+    if (action === 'hide') {
+      $container.css('display', 'none')
+    } else {
+      let $inner = $container.find('.flowchartContainerInner')
+      let axis = 'left'
+      let direction = 1
+      if (action === 'up') {
+        axis = 'top'
+        direction = -1
+        $inner = $container
+      } else if (action === 'down') {
+        axis = 'top'
+        $inner = $container
+      } else if (action === 'left') {
+        direction = -1
+      }
+      const axisMargin = `margin-${axis}`
+      let innerPos = parseInt($inner.css(axisMargin), 10) || 0
+      let newPos = innerPos + (shiftUnit * direction)
+      console.log(innerPos, newPos)
+      $inner.css(axisMargin, `${newPos}px`)
+    }
+  })
+}
+</script>
 {% endblock %}
+
+{% macro matchProps(props, type='depend') %}
+{% set human = req.query.human %}
+<ul class="matchProp__list {{ type }}-list xlist xlist-bullet">
+{% for prop in props %}
+<li>
+{% for key, constraint in prop %}
+  <p class="matchProp__key {{ type }}__key" style="font-weight:bold;">{% if human %}{{ getBlockProp(key, 'label') }}{% else %}{{ splitWord(key) | safe }}{% endif %}</p>
+  <p class="{{ type }}__constraint">{{ constraint }}</p>
+{% endfor %}
+</li>
+{% endfor %}
+</ul>
+{% endmacro %}

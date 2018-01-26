@@ -1,0 +1,121 @@
+{% extends "templates/app/app.html" %}
+{% from 'components/ErrorSummary/ErrorSummary.njk' import ErrorSummary with context %}
+
+{% block stylesheet %}
+<link href="/public/stylesheets/govuk-form-styles.css" rel="stylesheet">
+{{ super() }}
+{% endblock %}
+
+{% block back_content %}
+{{ Back(app) }}
+{% endblock %}
+
+{% block grid_content_header_pre %}{{ ErrorSummary(errors) }}{% endblock %}
+{% block grid_content_body %}
+{# app.wizard.steps.count - {{ app.wizard.steps.count }}
+{% if app.wizard.steps.count > 1 and route.template != 'step-by-step' %}
+<a class="link-back" href="{{ getRouteUrl(wizard.stepsFlat[app.wizard.steps.count - 1]) }}">Back</a>
+{% endif %} #}
+<form method="post" class="content-form">
+{{ super() }}
+
+{% if route.multiple_add_auto or route.multiple_delete_auto %}
+<div class="control-group__actions">
+{% if route.multiple_add_auto %}
+{{ Block.MultipleRouteAdd() }}
+{% endif %}
+{% if route.multiple_delete_auto %}
+{{ Block.MultipleRouteDelete() }}
+{% endif %}
+</div>
+{% endif %}
+
+{% set startPage = route.start %}
+<div class="xform-group form-submit">
+{% set saveContinue = app.saveContinue %}
+{% set formContinue = 'string:save-continue' %}
+{% if saveContinue %}
+{% set formContinue = 'string:continue' %}
+{% endif %}
+{% if startPage %}{% set formContinue = 'string:start' %}{% set saveContinue = false %}{% endif %}
+{% if route.continue %}{% set formContinue = 'string:' + route.continue %}{% set saveContinue = false %}{% endif %}
+<button class="button {% if startPage %}button-start {% endif %}next validation-submit" type="submit">{{ Block.String(formContinue) }}</button>
+{% if saveContinue %}
+<button class="button button-secondary button-save-return" type="submit" name="save-return" value="save-return">{{ Block.String('string:save-return') }}</button>
+{% endif %}
+</div>
+
+</form>
+{% endblock %}
+
+{% block body_end %}
+{{ super() }}
+<script>
+/*
+function unsetCheckbox(inputs) {
+  inputs.prop('checked', false)
+  inputs.closest('label').removeClass('selected')
+}
+jQuery('[data-excludes] input').on('change', function(){
+  if (this.checked) {
+    var inputs = jQuery(this).closest('fieldset').find('> label > input').not(this)
+    unsetCheckbox(inputs)
+  }
+}).closest('fieldset').find('> label > input').not('[data-excludes] input').on('change', function(){
+  if (this.checked) {
+    var inputs = jQuery(this).closest('fieldset').find('> label[data-excludes] > input')
+    unsetCheckbox(inputs)
+  }
+})
+*/
+jQuery('input[aria-controls]').each(function(){
+  var $this = jQuery(this)
+  var name = $this.attr('name')
+  var controls = $this.attr('aria-controls')
+  var revealsId = this.id
+  var $controls = jQuery('#' + controls)
+  jQuery('input[name="' + name + '"]').on('change', function(){
+    var state = this.type === 'checkbox' ? this.checked : this.id === revealsId
+    var classMethod = state ? 'removeClass' : 'addClass'
+    var ariaHidden = state ? 'false' : 'true'
+    $controls[classMethod]('js-hidden')
+    $controls.attr('aria-hidden', ariaHidden)
+  })
+})
+jQuery('.content-form').on('submit', function(e) {
+  jQuery('[aria-hidden="true"]').each(function() {
+    jQuery('[name]', this).each(function() {
+      var $nestedField = jQuery(this)
+      var checked = $nestedField.attr('checked')
+      if (checked) {
+        $nestedField.attr('checked', false)
+      } else {
+        $nestedField.val('')
+      }
+    })
+  })
+})
+
+{% if not flowchart and not edit %}
+jQuery('[data-download] a').each(function() {
+  var downloadUrl = jQuery(this).attr('href')
+  jQuery('body').append('<iframe src="' + downloadUrl + '" style="display:none;"></iframe>')
+})
+{% endif %}
+
+var $passwordControl = jQuery('#user_password').closest('.form-group')
+var toggleValue = {
+  text: 'Hide password',
+  password: 'Show password'
+}
+$passwordControl.html($passwordControl.html() + '<p class="togglePassword"><span class="button button-secondary">' + toggleValue.password + '</span></p>')
+jQuery('.togglePassword span').on('click', function(){
+  var $password = jQuery('#user_password')
+  var type = $password.attr('type')
+  var updateType = type === 'password' ? 'text' : 'password'
+  var toggleText = toggleValue[updateType]
+  $password.attr('type', updateType)
+  jQuery(this).html(toggleText)
+})
+</script>
+{% endblock %}

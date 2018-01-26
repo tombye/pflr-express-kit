@@ -1,13 +1,38 @@
 {% from '../FormGroup/FormGroup.njk' import FormGroup with context %}
 {% from '../ControlLabel/ControlLabel.njk' import ControlLabel with context %}
-{% macro Input(name, type='text') -%}
-  {% call FormGroup(name, error=error) -%}
+{% macro Input(name, suffix='', type='text', value='', label='', multiline=false, cols=80, rows=5, placeholder='', pattern='', min='', max='', controlError='') -%}
+  {% if suffix %}{% set name = name + '.' + suffix %}{% endif %}
+  {% set prefixedName = name %}
+  {% if route._prefix %}{% set prefixedName = route._prefix + prefixedName %}{% endif %}
+  {% set controlErrorCheck = '' + controlError %}
+  {% if not controlErrorCheck %}
+    {% set controlError = getError(prefixedName) %}
+  {% endif %}
+  {% call FormGroup(name, suffix=suffix, error=error) -%}
     {{ ControlLabel(name, label=label, sublabel=sublabel, hint=hint, error=error) }}
-    {% set value = getValue(name) %}
-    {% if type === 'text' and getBlockProp(name, 'multiline') %}
-      <textarea class="form-control" name="{{ name }}" id="{{ name }}">{{ value | safe }}</textarea>
+    {% if prefixedName and not value %}
+    {% if getValue %}
+      {% set value = getValue(prefixedName) %}
+    {% endif %}
+    {% endif %}
+    {% if name %}
+      {% if not multiline %}
+        {% set multiline = getBlockProp(name, 'multiline') %}
+      {% endif %}
+      {% set placeholder = getBlockProp(name, 'placeholder', { value: placeholder }) %}
+      {% set pattern = getBlockProp(name, 'pattern', { value: pattern }) %}
+      {% set min = getBlockProp(name, 'min', { value: '' + min }) %}
+      {% set minType = typeof(min) %}
+      {% if minType == 'number' %}{% set min = '' + min %}{% endif %}
+      {% set max = getBlockProp(name, 'max', { value: '' + max }) %}
+      {% set maxType = typeof(max) %}
+      {% if maxType == 'number' %}{% set max = '' + max %}{% endif %}
+    {% endif %}
+    {% if type === 'text' and multiline %}
+      <textarea class="form-control{% if controlError %} form-control-error{% endif %}" name="{{ prefixedName }}" id="{{ prefixedName }}" cols="{{ cols }}" rows="{{ rows }}">{{ value | safe }}</textarea>
     {% else %}
-      <input type="{{ type }}" class="form-control" name="{{ name }}" id="{{ name }}" value="{{ value | escape }}">
+      <input type="{{ type }}" class="form-control{% if controlError %} form-control-error{% endif %}" name="{{ prefixedName }}" id="{{ prefixedName }}" value="{{ value | escape }}"{% if placeholder %} placeholder="{{ placeholder }}"{% endif %}{% if pattern %} data-pattern="{{ pattern }}"{% endif %}{% if min %} min="{{ min }}"{% endif %}{% if max %} max="{{ max }}"{% endif %}>
     {% endif %}
   {%- endcall %}
+  {% if flowchart %}<span></span>{% endif %}
 {%- endmacro %}

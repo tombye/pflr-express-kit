@@ -68,10 +68,126 @@ sup {
   font-size: 75%;
 }
 
+.labelLine {
+  display: block;
+}
+
+.labelLine + .labelLine {
+  margin-top: 1.25rem;
+}
+
+.labelLineBullet {
+  position: relative;
+  padding-left: 4rem;
+}
+
+.labelBullet {
+  position: absolute;
+  left: 0.5rem;
+}
+
 .app__section_heading {
   @apply --gv-u-heading-small;
 }
 
 .app__section_heading + .app__heading {
   margin-top: 1rem;
+}
+
+.error-message p {
+  margin: 0;
+}
+
+.button.button-secondary {
+  /* font-size: 1.5rem; */
+  background: transparent;
+  color: var(--govuk-blue);
+  border-bottom-color: var(--govuk-white);
+  box-shadow: none;
+  text-decoration: underline;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 6rem;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
+
+.button--destructive {
+  background-color: var(--mellow-red);
+
+  &:hover {
+    background-color: var(--red);
+  }
+}
+
+@media (--govuk-medium) {
+  .fieldset-block .multiple-choice {
+    float: none;
+    display: table;
+    margin-bottom: 10px;
+    margin-right: 0;
+    width: 100%;
+
+    & .panel-border-narrow {
+      margin-left: -38px;
+    }
+  }
+}
+
+.form-group {
+  & input[type=text],
+  & input[type=password],
+  & textarea {
+    &.form-control {
+      width: 100%;
+
+      &[name*=postcode] {
+        width: 12rem;
+      }
+
+      &[name*=phone] {
+        width: 50%;
+      }
+    }
+  }
+}
+
+.form-group {
+  & .form-group:first-child,
+  & .form-group:last-child {
+    margin-top: 0;
+  }
+}
+
+.form-date .form-label-bold {
+  font-weight: normal;
+}
+
+.form-date .error {
+  border-left: none;
+  padding-left: 0;
+}
+
+.form-date .error-message {
+  display: none;
+}
+
+.form-group[data-block-name$="unsure"],
+.form-group[data-block-name*="_unsure_"] {
+  margin-top: -20px;
+}
+
+.extraBlocks {
+  margin-top: 3rem;
+}
+
+.gv-c-notice {
+  margin-bottom: 2.5rem;
+}
+
+.gv-c-notice .gv-c-notice__icon {
+  top: 0;
+  margin-top: 0;
 }

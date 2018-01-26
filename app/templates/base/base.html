@@ -2,28 +2,35 @@
 
 {% import "components/Utils/Utils.njk" as Utils with context %}
 
+{% from 'components/TopNavigation/TopNavigation.njk' import TopNavigation with context %}
 
 {{ Utils.registerBlocks([
   "components/BlockHeading/BlockHeading.njk",
   "components/BlockLede/BlockLede.njk",
   "components/Body/Body.njk",
+  "components/Checkbox/Checkbox.njk",
   "components/CheckboxGroup/CheckboxGroup.njk",
   "components/Control/Control.njk",
   "components/ControlLabel/ControlLabel.njk",
   "components/ControlError/ControlError.njk",
+  "components/Date/Date.njk",
   "components/DependsAria/DependsAria.njk",
   "components/DependsHidden/DependsHidden.njk",
   "components/Fieldset/Fieldset.njk",
   "components/File/File.njk",
   "components/FormGroup/FormGroup.njk",
   "components/Group/Group.njk",
+  "components/Hidden/Hidden.njk",
   "components/Input/Input.njk",
   "components/Inset/Inset.njk",
+  "components/MultipleRouteAdd/MultipleRouteAdd.njk",
+  "components/MultipleRouteDelete/MultipleRouteDelete.njk",
   "components/Notice/Notice.njk",
   "components/Number/Number.njk",
   "components/OptionLabel/OptionLabel.njk",
   "components/PageHeader/PageHeader.njk",
   "components/Password/Password.njk",
+  "components/ProgressiveDisclosure/ProgressiveDisclosure.njk",
   "components/RadioGroup/RadioGroup.njk",
   "components/Raw/Raw.njk",
   "components/Reveal/Reveal.njk",
@@ -37,6 +44,7 @@
 <script>if(window.addEventListener){addEventListener('error', window.__e=function f(e){f.q=f.q||[];f.q.push(e)})}</script>
 {{ super() }}
 <link href="/public/stylesheets/core-layout-print.css" media="print" rel="stylesheet">
+<link href="/public/stylesheets/custom-styles.css" rel="stylesheet">
 {% endblock %}
 
 {#{% block top_of_page %}$$top_of_page{% endblock %}#}
@@ -45,7 +53,7 @@
 {#{% block stylesheet %}$$stylesheet{% endblock %}#}
 {#{% block head %}<script>console.log('$$head')</script>{% endblock %}#}
 {#{% block body_classes %}$$body_classes{% endblock %}#}
-{#{% block body_start %}$$body_start{% endblock %}#}
+{% block body_start %}{{ TopNavigation(route.url) }}{% endblock %}
 {#{% block skip_link_message %}$$skip_link_message{% endblock %}#}
 {#{% block cookie_message %}$$cookie_message{% endblock %}#}
 {% block header_class %}with-proposition{% endblock %}
@@ -73,6 +81,7 @@
 
 {% block content %}
 {% block breadcrumbs_content %}{% endblock %}
+{% block back_content %}{% endblock %}
 {% block main_content %}
 <main data-block-name="{{ route.id }}">
 {% block grid_content %}{{ Block.Group(blocks=route.blocks) }}{% endblock %}
@@ -86,5 +95,34 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
 <script src="/public/javascripts/block-edit/block-edit.js"></script>
 <link href="/public/javascripts/block-edit/block-edit.css" rel="stylesheet">
+<style>
+.multiple-group {
+  position: relative;
+  border: solid 1px #ccc;
+  margin: 20px 0;
+  margin-right: 20px;
+  box-shadow: 1px 1px 0px 0px #fff, 2px 2px 0px 0px #ccc, 3px 3px 0px 0px #fff, 4px 4px 0px 0px #ccc, 5px 5px 0px 0px #fff, 6px 6px 0px 0px #ccc, 7px 7px 0px 0px #fff, 8px 8px 0px 0px #ccc;
+}
+.mutiple-group-details {
+  font-size: 1rem;
+  position: absolute;
+  right: 0;
+  top: -1.5rem;
+}
+</style>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% set jqueryjs = 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js' %}
+{% if not ENV %}
+{% set jqueryjs = '/public/javascripts/vendor/jquery/jquery_v1.12.4.js' %}
+{% endif %}
+<!--[if gte IE 8]><!-->
+  <script src="{{jqueryjs}}"></script>
+  <script src="{{ asset_path }}javascripts/govuk-template.min.js?0.0.1"></script>
+  <script src="{{ asset_path }}javascripts/toolkit.min.js?0.0.1"></script>
+  <script src="{{ asset_path }}javascripts/components.min.js?0.0.1"></script>
+<!--<![endif]-->
+  <script src="{{ asset_path }}javascripts/data-excludes/data-excludes.js"></script>
 {% endblock %}

@@ -1,0 +1,20 @@
+{% macro ErrorSummary(errors) %}
+{% if errors %}
+<div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+
+<p class="{{ govukClassname('heading-medium') }} error-summary-heading" id="error-summary-heading">
+{{ getFormattedProp('error-header', 'heading') }}
+</p>
+
+<ul class="error-summary-list">
+{% for errorKey, errorValue in errors %}
+{% if not errorValue.noheader %}
+<li><a href="#{{ errorKey }}">{{ getFormattedError(errorKey, {header:true, prefix:route._prefix}) | safe }}</a></li>
+{# <li>errorKey:{{errorKey}} - errorValue:{{errorValue}}</li> #}
+{% endif %}
+{% endfor %}
+</ul>
+
+</div>
+{% endif %}
+{% endmacro %}

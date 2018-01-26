@@ -1,26 +1,155 @@
 {% extends 'admin/admin-base/admin-base.html' %}
 
 {% block page_title %}
-Block - Proto_blockType
+{{block}} - Block
 {% endblock %}
 
 {% block admin_content %}
 {% set _blockType = getBlockProp(block, '_blockType') %}
-<p><a class="link-back" href="/admin/blocks/{{ _blockType }}">Back to {{ _blockType }}</a></p>
+{% if parentBlock or block == "route:index" %}
+<!-- <p><a class="link-back" href="/admin/block/{{ parentBlock }}">Back to {{ parentBlock }} blocks</a></p> -->
+<p><a class="link-back" href="/admin/pages/#{{ block }}">All pages</a></p>
+{% else %}
+<p><a class="link-back" href="/admin/blocks/{{ _blockType }}">Back to {{ _blockType }} blocks</a></p>
+{% endif %}
 
-<h1 class="{{ govukClassname('heading-large') }}">{{ block }}</h1>
+<h1 class="{{ govukClassname('heading-large') }}">
+{% if new %}
+Create new {{ block }} block
+{% else %}
+{{ block }}
+{% if _blockType == 'Route' %}
+{# {% set routeUrl = getBlockProp(block, 'url') %} #}
+{% set routeUrl = getRouteUrl(block) %}
+{% if routeUrl %}
+<small>route url <a href="{{ routeUrl }}">{{ routeUrl }}</a> <a href="{{ routeUrl }}/edit">(edit)</a></small>
+{% endif %}
+{% endif %}
+{% endif %}
+</h1>
 
+{% if new %}
+<form method="post">
+ {{ Block.Text('_id', label='Id for new block') }}
+ <div class="hidden">{{ Block.Text('block', value=blockJSON, multiline=true, rows=1) }}</div>
+ <div class="admin-actions">
+ <button name="action" value="update" class="{{ govukClassname('button') }}">Create new {{ block }} block</button>
+ </div>
+</form>
+{% else %}
 {% if stringProps.length %}
-<ul class="{{ govukClassname('list-bullet') }}">
+<ul class="blockProperties {{ govukClassname('list-bullet') }}">
 {% for prop in stringProps %}
-<li><a href="/admin/block/{{ block }}/{{ prop }}">{{ prop }}</a></li>
+{% set rawBlock = getBlockRaw(block) %}
+{% set blockProp = rawBlock[prop] %}
+{% set blockPropType = typeof(blockProp ) %}
+{% if schemaProperties[prop] %}
+{% set blockPropType = schemaProperties[prop].type %}
+{% endif %}
+{% set propBlockRef = '' %}
+{% if blockPropType == 'string' %}
+{% set propBlockRef = getBlockProp(blockProp, '_id') %}
+{% endif %}
+<li class="blockProp">{% if prop != 'xdepends' %}<a href="/admin/block/{{ block }}/{{ prop }}">{% endif %}{{ prop }}{% if not requiredProps[prop] %} <small class="optional">(optional)</small>{% endif %}{% if prop != 'xdepends' %}</a>{% endif %}
+
+<small class="blockProp__value">
+{% if prop == 'depends' %}
+{{ blockProp | json | replace('[{"', '')  | replace('}]', '') | replace('":', ':') }}
+{% else %}
+{% if propBlockRef %}<a href="/admin/block/{{ blockProp }}">{% endif %}
+{% if blockProp %}{{ blockProp | json | replace(r/^"(.*)"$/, '$1') | truncate(120) }}{% else %}<em>Not set</em>{% endif %}
+{% if propBlockRef %}</a>{% endif %}
+{% endif %}
+</small>
+</li>
 {% endfor %}
 </ul>
 {% endif %}
 
 <form method="post">
-<textarea name="block" id="block" cols="80" rows="1">{{blockJSON | safe}}</textarea>
-<p><button class="{{ govukClassname('button') }}">Update block</button></p>
+<details>
+  <summary><span class="summary">Edit raw block</span></summary>
+  <div class="{{ govukClassname('summary-details') }}">
+    {{ Block.Text('block', value=blockJSON, multiline=true, rows=1) }}
+  </div>
+  <details>
+    <summary><span class="summary">View expanded block</span></summary>
+    <div class="{{ govukClassname('summary-details') }}">
+      {# <h2 class="{{ govukClassname('heading-medium') }}">Expanded JSON</h2> #}
+      <p class="blockJSONExpanded">{{blockJSONExpanded | safe}}</p>
+    </div>
+  </details>
+  <div class="admin-actions">
+  <button name="action" value="update" class="{{ govukClassname('button') }}">Update {{ block }}</button>
+  </div>
+</details>
+
+
+  <div class="admin-actions">
+    <details>
+    <summary><span class="summary">Add property</span></summary>
+    <div class="{{ govukClassname('summary-details') }}">
+    {{ Block.Text('propName', label='Property name')}}
+    <button name="action" value="prop" class="{{ govukClassname('button') }}">Add property</button>
+    </div>
+  </details>
+    <details>
+    <summary><span class="summary">Clone block</span></summary>
+    <div class="{{ govukClassname('summary-details') }}">
+    {{ Block.Text('cloneId', label='New id')}}
+    <button name="action" value="clone" class="{{ govukClassname('button') }}">Clone block</button>
+    </div>
+  </details>
+  <button name="action" value="delete" class="{{ govukClassname('button') }} button--delete">Delete {{ block }}</button>
+  </div>
+
 </form>
 
+{% endif %}
+
+{% endblock %}
+
+{% block body_end %}
+{{ super() }}
+<script>
+var $form = jQuery('form')
+$form.on('submit', function(e) {
+  if ($form.attr('action') === '/id-exists') {
+    e.preventDefault()
+    e.stopPropagation()
+    alert('A block with this id already exists')
+  }
+})
+</script>
+{% if new %}
+<script>
+var $id = jQuery('[name="_id"]')
+var $block = jQuery('[name="block"]')
+var blockJSON = JSON.parse($block.val())
+$id.on('keyup', function() {
+  var newId = $id.val()
+  blockJSON._id = newId
+  $form.attr('action', '/id-exists')
+  jQuery.getJSON('/api/block/' + newId, function(json) {
+    if (!json._id) {
+      $block.val(JSON.stringify(blockJSON, null, 2))
+      $form.attr('action', '/admin/block/' + newId)
+    }
+  })
+})
+</script>
+{% else %}
+<script>
+var $cloneId = jQuery('[name="cloneId"]')
+$cloneId.on('keyup', function() {
+  var newId = $cloneId.val()
+  $form.attr('action', '/id-exists')
+  jQuery.getJSON('/api/block/' + newId, function(json) {
+    if (!json._id) {
+      $form.attr('action', '/admin/block/' + newId)
+    }
+  })
+})
+</script>
+{% endif %}
 {% endblock %}

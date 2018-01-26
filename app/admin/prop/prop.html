@@ -1,0 +1,90 @@
+{% extends 'admin/admin-base/admin-base.html' %}
+
+{% block page_title %}
+{{ prop }} - {{ block }}
+{% endblock %}
+
+{% block admin_content %}
+{% if not _blockType %}
+{% set _blockType = getBlockProp(block, '_blockType') %}
+{% endif %}
+{# <p><a class="link-back" href="/admin/blocks/{{ _blockType }}">Back to {{ _blockType }} blocks</a></p> #}
+<p><a class="link-back" href="/admin/block/{{ block }}">Back to <strong>{{ block }}</strong></a></p>
+
+<h1 class="{{ govukClassname('heading-large') }}"><a class="header-link-back" href="/admin/block/{{ block }}">{{ block }}</a>{% if prop %}.{{ prop }}{% endif %}</h1>
+
+{% if doesNotExist %}
+<p>{{ block }} doesn’t exist yet</p>
+<p><a href="/admin/block/{{ block }}">Create {{ block }}</a></p>
+{% else %}
+<form method="post">
+
+<div class="propType {{ propType }}Prop">
+{% if propType == 'string' %}
+{{ Block.Text('value', value=value, multiline=multiline, rows=1) }}
+{% endif %}
+{% if propType == 'object' %}
+{% if value %}{% set value = jsonify(value) %}{% endif %}
+{{ Block.Text('value', value=value, multiline=true, rows=1) }}
+{% endif %}
+{% if propType == 'number' %}
+{{ Block.Number('value', value=value) }}
+{% endif %}
+{% if propType == 'boolean' %}
+{% set trueOption = { value: 'true', label: 'True', checked: value } %}
+{% if not value %}{% set falseChecked = true %}{% endif %}
+{% set falseOption = { value: 'false', label: 'False', checked: falseChecked } %}
+{% set valueOptions = [trueOption, falseOption] %}
+{{ Block.RadioGroup('value', options=valueOptions) }}
+{% endif %}
+{% if propType == 'array' %}
+{% set arrayObject = false %}
+{% set arrayType = propSchema.items.type %}
+{% if arrayType == 'object' %}
+{% set arrayObject = true %}
+{% endif %}
+{% for valueItem in value %}
+<div class="container propContainer">
+{% if arrayType == 'object' %}
+{% set valueItem = jsonify(valueItem) %}
+{% endif %}
+{{ Block.Text('value', value=valueItem, multiline=arrayObject) }}
+<div class="blockActions">
+{% if arrayType != 'object' %}
+<p class="blockLink"><a href="/admin/block/{{ valueItem }}" title="{{valueItem}} block">{}</a></p>
+{% endif %}
+<p class="blockRemove"><span title="Remove {{valueItem}}">Remove</span></p>{# ⌫ #}
+</div>
+</div>
+{% endfor %}
+<div class="container propContainer">
+{{ Block.Text('value', value='', multiline=arrayObject, placeholder='Add new item') }}
+</div>
+{% endif %}
+</div>
+
+{% if noValue %}{% if propType != 'array' %}{% if not propSchema.type %}
+{% set stringOption = { value: 'string', label: 'String', checked: true } %}
+{% set arrayOption = { value: 'array', label: 'Array' } %}
+{% set objectOption = { value: 'object', label: 'Object' } %}
+{% set numberOption = { value: 'number', label: 'Number' } %}
+{% set booleanOption = { value: 'boolean', label: 'Boolean' } %}
+{% set propTypeOptions = [stringOption, numberOption, booleanOption, arrayOption, objectOption] %}
+{{ Block.RadioGroup('propType', options=propTypeOptions) }}
+  {% endif %}{% else %}
+  <input type="hidden" name="propType" value="{{ propType }}">
+  {% endif %}
+{% else %}
+<input type="hidden" name="propType" value="{{ propType }}">
+{% endif %}
+
+<div class="admin-actions">
+<button class="{{ govukClassname('button') }}">{% if noValue %}Add{% else %}Save{% endif %} {{ prop }}</button>
+{% if not noValue %}
+<button name="action" value="delete" class="{{ govukClassname('button') }} button--delete">Delete {{ prop }}</button>
+{% endif %}
+</div>
+</form>
+{% endif %}
+
+{% endblock %}

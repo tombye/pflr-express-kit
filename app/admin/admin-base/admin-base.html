@@ -1,12 +1,24 @@
 {% extends "templates/base/base.html" %}
 
+{% block proposition_name %}{{ Block.String('ServiceName') }}{% endblock %}
+
+{% block stylesheet %}
+{{ super() }}
+<link href="/public/stylesheets/govuk-form-styles.css" rel="stylesheet">
+{% endblock %}
+
 {% block main_content %}
 <style type="text/css">
 .link-admin {
   position: absolute;
   top: 0;
   font-size: 3rem;
+  font-weight: bold;
   color: #ffffff;
+  text-decoration: none;
+}
+.link-admin:hover {
+  text-decoration: underline;
 }
 .link-admin:visited {
   color: #ffffff;
@@ -15,19 +27,101 @@
 .xheader-proposition * {
   visibility: hidden;
 }
+
+summary + .panel {
+  margin-top: -1rem;
+  padding-top: 1px;
+}
+summary + .panel label,
+.container label[for=value],
+.propType label[for=value] {
+  position: absolute;
+  left: -9999px;
+}
+
+textarea.form-control[name=block],
+textarea.form-control[name=value],
+.stringProp input.form-control,
+.xarrayProp input.form-control {
+  width: 100%;
+}
+.numberProp input.form-control {
+  width: 4rem;
+}
+
+.blockProp .optional {
+  font-size: 1rem;
+}
+
+.blockProp__value {
+  display: block;
+  font-size: 1.5rem;
+  color: #999999;
+}
+.button--delete {
+  background-color: #df3034;
+  margin-left: 2rem;
+  float: right;
+}
+.button--delete:hover {
+  background-color: #b10e1e;
+}
+
+.admin-actions {
+  xdisplay: table;
+  overflow: hidden;
+  margin: 4rem 0 3rem;
+}
+
+.blockJSONExpanded {
+  white-space: pre-line;
+}
 </style>
-<p><a class="link-admin link-back" href="/admin/quicklinks">Admin page</a></p>
+<p><a class="link-admin" href="/admin/quicklinks">Admin page</a></p>
 {% block admin_content %}{% endblock %}
 {% endblock %}
 
 {% block body_end %}
 {{ super() }}
+{% set dragulacss = 'https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.css' %}
+{% set dragulajs = 'https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js' %}
+{% if not ENV %}
+{% set dragulajs = '/public/javascripts/vendor/dragula/dragula_v3.7.2.js' %}
+{% set dragulacss = '/public/javascripts/vendor/dragula/dragula_v3.7.2.css' %}
+{% endif %}
+<link href="{{ dragulacss }}" media="screen" rel="stylesheet">
+<script src="{{ dragulajs }}"></script>
 <script src="/public/javascripts/autosize/autosize.js"></script>
 <script type="text/javascript">
-var textareas = jQuery('textarea')
-autosize(textareas)
+var $textareas = jQuery('textarea')
+if ($textareas.length) {
+  autosize($textareas)
+}
+setInterval(function () {
+    autosize.update($textareas)
+  }, 100)
+
+var itemContainer = document.querySelector('.arrayProp')
+dragula([itemContainer], {
+  revertOnSpill: true,
+  ignoreInputTextSelection: false
+})
+
+jQuery('.blockRemove span').on('click', function() {
+  var $form = jQuery(this).closest('form')
+  jQuery(this).closest('.propContainer').remove()
+  $form.submit()
+})
 </script>
 <style type="text/css">
+h1 small {
+  display: block;
+  font-size: 1.75rem;
+}
+
+tr:hover {
+  background: #f8f8f8;
+}
 textarea {
   border: solid 1px #000;
   margin: 2em 0;
@@ -37,5 +131,96 @@ textarea {
   min-height: 3.5em;
   width: 100%;
 }
+
+h1 a,
+.blockProperties a {
+  text-decoration: none;
+  pointer: cursor;
+}
+h1 a:hover,
+.blockProperties a:hover {
+  text-decoration: underline;
+}
+h1 a:visited,
+td a:visited,
+.blockProperties a:visited {
+  color: #005ea5;
+}
+h1 a:visited:hover,
+td a:visited:hover,
+.blockProperties a:visited:hover {
+  color: #2b8cc4;
+}
+.routes-link a {
+  text-decoration: none;
+}
+
+.propContainer {
+  position: relative;
+  padding-left: 20px;
+}
+.propContainer:before,
+.propContainer:after {
+  background: #333;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  cursor: move;
+  content: '▲';
+  font-weight: bold;
+  color: #fff;
+  width: 20px;
+  z-index: 1000;
+  text-align: center;
+  font-size: 1.5rem;
+  padding-left: 0.125rem;
+}
+.propContainer:after {
+  z-index: 1001;
+  background: transparent;
+  content: '▼';
+  padding-top: 1.75rem;
+}
+.gu-mirror .form-group {
+  margin-top: 0;
+  width: 100%;
+}
+.gu-mirror .blockActions {
+  display: none;
+}
+.propContainer:hover:before{
+  background: #000;
+}
+.blockLink {
+  position: absolute;
+  top: 0.25rem;
+  left: -2rem;
+}
+.blockRemove {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  margin-left: 2rem;
+}
+.blockActions span,
+.blockActions a {
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+.blockActions span:hover {
+  text-decoration: underline;
+}
+.blockActions span {
+  font-size: 1.25rem;
+}
+.blockActions span {
+  color: #005ea5;
+}
+.blockActions span:hover {
+  color: #2b8cc4;
+}
+
 </style>
 {% endblock %}

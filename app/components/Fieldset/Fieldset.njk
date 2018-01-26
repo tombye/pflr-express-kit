@@ -1,8 +1,9 @@
 {% from '../ControlError/ControlError.njk' import ControlError with context %}
 {% from '../Group/Group.njk' import Group with context %}
-{% macro Fieldset(name, label='', sublabel='', inline='', blocks='', group='', visually_hidden=true, error='') %}
-{% set label = getFormattedProp(name, 'label', { value: label }) %}
-{% set sublabel = getFormattedProp(name, 'sublabel', { value: sublabel }) %}
+{% macro Fieldset(name, content='', label='', sublabel='', hint='', inline='', blocks='', group='', visually_hidden=false, error='') %}
+{% set label = getFormattedBodyContent(name, 'label', { value: label }) %}
+{% set sublabel = getFormattedBodyContent(name, 'sublabel', { value: sublabel }) %}
+{% set hint = getFormattedBodyContent(name, 'hint', { value: hint }) %}
 {% set inline = getBlockProp(name, 'inline', { value: inline }) %}
 {% if not blocks and getBlockProp(name, 'blocks') %}
 {% set blocks = getBlockProp(name, 'blocks') %}
@@ -11,9 +12,9 @@
   {#{% if sublabel %}
   <p>{{ sublabel | safe }}</p>
   {% endif %}#}
-  <fieldset{% if inline %} class="inline"{% endif %}>
-    <legend{% if visually_hidden %} class="xvisuallyhidden"{% endif %}>
-    <span class="form-label-bold">{{ label | safe }}</span>
+  <fieldset class="{% if inline %}inline{% else %}fieldset-block{% endif %}">
+    <legend>
+    <span class="form-label-bold{% if visually_hidden %} visuallyhidden{% endif %}">{{ label | safe }}</span>
       {% if sublabel %}
       <span class="form-sublabel">{{ sublabel | safe }}</span>
       {% endif %}
@@ -24,10 +25,14 @@
     {% endif %}
     {{ ControlError(name, error) }}
     </legend>
+  {% if content %}
+    {{ content | safe }}
+  {% endif %}
   {% if caller %}
     {{ caller() }}
   {% endif %}
   {% if blocks %}
+  {{ blocks | json}}
     {{ Group(blocks=blocks) }}
   {% endif %}
   </fieldset>
